@@ -1,9 +1,12 @@
 
 import React, { Component } from "react";
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
 import Jumbotron from "../components/Jumbotron";
 import API from "../utils/API";
+import Input from "../components/Input";
+import Button from "../components/Button";
+import { BookList, BookListItem } from "../components/BookList";
 
 class Detail extends Component {
   state = {
@@ -31,7 +34,6 @@ class Detail extends Component {
   render() {
     return (
       <div>
-        <Nav />
         <Jumbotron />
         <Container>
           <Row>
@@ -44,7 +46,7 @@ class Detail extends Component {
                         name="bookSearch"
                         value={this.state.bookSearch}
                         onChange={this.handleInputChange}
-                        placeholder="Search For a Recipe"
+                        placeholder="Search For a Book"
                       />
                     </Col>
                     <Col size="xs-3 sm-2">
@@ -66,19 +68,20 @@ class Detail extends Component {
               {!this.state.books.length ? (
                 <h1 className="text-center">No Books to Display</h1>
               ) : (
-                <RecipeList>
+                <BookList>
                   {this.state.books.map(book => {
                     return (
-                      <RecipeListItem
-                        key={book.title}
-                        title={book.title}
-                        href={book.href}
-                        ingredients={book.ingredients}
-                        thumbnail={book.thumbnail}
+                      <BookListItem
+                        key={book.volumeInfo.title}
+                        title={book.volumeInfo.title}
+                        authors={book.volumeInfo.authors}
+                        description={book.volumeInfo.description}
+                        image={book.volumeInfo.imageLinks.thumbnail}
+                        link={book.volumeInfo.previewLink}
                       />
                     );
                   })}
-                </RecipeList>
+                </BookList>
               )}
             </Col>
           </Row>
