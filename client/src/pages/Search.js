@@ -1,39 +1,19 @@
+
 import React, { Component } from "react";
-import DeleteBtn from "../components/DeleteBtn";
-import Jumbotron from "../components/Jumbotron";
-import API from "../utils/API";
 import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../components/Grid";
-import { List, ListItem } from "../components/List";
-import { Input, TextArea, FormBtn } from "../components/Form";
+import Jumbotron from "../components/Jumbotron";
+import API from "../utils/API";
 
-class Books extends Component {
+class Detail extends Component {
   state = {
     books: [],
-    title: "",
-    author: "",
-    synopsis: ""
-  };
-
-  componentDidMount() {
-    this.loadBooks();
-  }
-
-  loadBooks = () => {
-    API.getBooks()
-      .then(res =>
-        this.setState({ books: res.data, title: "", author: "", synopsis: "" })
-      )
-      .catch(err => console.log(err));
-  };
-
-  deleteBook = id => {
-    API.deleteBook(id)
-      .then(res => this.loadBooks())
-      .catch(err => console.log(err));
+    bookSearch: ""
   };
 
   handleInputChange = event => {
+    // Destructure the name and value properties off of event.target
+    // Update the appropriate state
     const { name, value } = event.target;
     this.setState({
       [name]: value
@@ -41,78 +21,119 @@ class Books extends Component {
   };
 
   handleFormSubmit = event => {
+    // When the form is submitted, prevent its default behavior, get recipes update the recipes state
     event.preventDefault();
-    if (this.state.title && this.state.author) {
-      API.saveBook({
-        title: this.state.title,
-        author: this.state.author,
-        synopsis: this.state.synopsis
-      })
-        .then(res => this.loadBooks())
-        .catch(err => console.log(err));
-    }
+    API.searchBook(this.state.bookSearch)
+      .then(res => this.setState({ books: res.data }))
+      .catch(err => console.log(err));
   };
 
   render() {
     return (
-      <Container fluid>
-        <Row>
-          <Col size="md-6">
-            <Jumbotron>
-              <h1>What Books Should I Read?</h1>
-            </Jumbotron>
-            <form>
-              <Input
-                value={this.state.title}
-                onChange={this.handleInputChange}
-                name="title"
-                placeholder="Title (required)"
-              />
-              <Input
-                value={this.state.author}
-                onChange={this.handleInputChange}
-                name="author"
-                placeholder="Author (required)"
-              />
-              <TextArea
-                value={this.state.synopsis}
-                onChange={this.handleInputChange}
-                name="synopsis"
-                placeholder="Synopsis (Optional)"
-              />
-              <FormBtn
-                disabled={!(this.state.author && this.state.title)}
-                onClick={this.handleFormSubmit}
-              >
-                Submit Book
-              </FormBtn>
-            </form>
-          </Col>
-          <Col size="md-6 sm-12">
-            <Jumbotron>
-              <h1>Books On My List</h1>
-            </Jumbotron>
-            {this.state.books.length ? (
-              <List>
-                {this.state.books.map(book => (
-                  <ListItem key={book._id}>
-                    <Link to={"/saved/" + book._id}>
-                      <strong>
-                        {book.title} by {book.author}
-                      </strong>
-                    </Link>
-                    <DeleteBtn onClick={() => this.deleteBook(book._id)} />
-                  </ListItem>
-                ))}
-              </List>
-            ) : (
-              <h3>No Results to Display</h3>
-            )}
-          </Col>
-        </Row>
-      </Container>
+      <div>
+        <Nav />
+        <Jumbotron />
+        <Container>
+          <Row>
+            <Col size="md-12">
+              <form>
+                <Container>
+                  <Row>
+                    <Col size="xs-9 sm-10">
+                      <Input
+                        name="bookSearch"
+                        value={this.state.bookSearch}
+                        onChange={this.handleInputChange}
+                        placeholder="Search For a Recipe"
+                      />
+                    </Col>
+                    <Col size="xs-3 sm-2">
+                      <Button
+                        onClick={this.handleFormSubmit}
+                        type="success"
+                        className="input-lg"
+                      >
+                        Search
+                      </Button>
+                    </Col>
+                  </Row>
+                </Container>
+              </form>
+            </Col>
+          </Row>
+          <Row>
+            <Col size="xs-12">
+              {!this.state.books.length ? (
+                <h1 className="text-center">No Books to Display</h1>
+              ) : (
+                <RecipeList>
+                  {this.state.books.map(book => {
+                    return (
+                      <RecipeListItem
+                        key={book.title}
+                        title={book.title}
+                        href={book.href}
+                        ingredients={book.ingredients}
+                        thumbnail={book.thumbnail}
+                      />
+                    );
+                  })}
+                </RecipeList>
+              )}
+            </Col>
+          </Row>
+        </Container>
+      </div>
     );
   }
 }
 
-export default Books;
+export default Detail;
+
+
+
+
+
+
+
+
+
+//   // When this component mounts, grab the book with the _id of this.props.match.params.id
+//   // e.g. localhost:3000/books/599dcb67f0f16317844583fc
+//   componentDidMount() {
+//     API.getBook(this.props.match.params.id)
+//       .then(res => this.setState({ book: res.data }))
+//       .catch(err => console.log(err));
+//   }
+
+//   render() {
+//     return (
+//       <Container fluid>
+//         <Row>
+//           <Col size="md-12">
+//             <Jumbotron>
+//               <h1>
+//                 {this.state.book.title} by {this.state.book.author}
+//               </h1>
+//             </Jumbotron>
+//           </Col>
+//         </Row>
+//         <Row>
+//           <Col size="md-10 md-offset-1">
+//             <article>
+//               <h1>Synopsis</h1>
+//               <p>
+//                 {this.state.book.synopsis}
+//               </p>
+//             </article>
+//           </Col>
+//         </Row>
+//         <Row>
+//           <Col size="md-2">
+//             <Link to="/">← Back to Authors</Link>
+//           </Col>
+//         </Row>
+//       </Container>
+//     );
+//   }
+// }
