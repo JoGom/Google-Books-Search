@@ -34,11 +34,13 @@ module.exports = {
       .then(dbModel => dbModel.remove())
       .then(dbModel => res.json(dbModel))
       .catch(err => res.status(422).json(err));
-  },
-  search: function(req, res) {
-    axios
-    .get("https://www.googleapis.com/books/v1/volumes?q=", { params: req.searchTerm })
-    .then(({ data: { items } }) => res.json(items))
-    .catch(err => res.status(422).json(err));
   }
+  // search: function(req, res) {
+  //   console.log("search controller ran");
+  //   console.log(req.query.searchTerm);
+  //   axios
+  //   .get("https://www.googleapis.com/books/v1/volumes", { q: req.query.searchTerm})
+  //   .then((books) => {console.log(".then ran =========");res.json(books)})
+  //   .catch(err => res.status(422).json(err));
+  // }
 };

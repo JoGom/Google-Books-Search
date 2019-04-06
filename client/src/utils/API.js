@@ -22,7 +22,7 @@ export default {
     return axios.post("/api/books", bookData);
   },
   // Searches for books using Google Books API
-  searchBook: function(searchTerm){
-    return axios.get("/api/search", {params: {q: searchTerm }});
+  searchBook: function(query){
+    return axios.get("/api/search", {params: {q: query}});
   }
 };
